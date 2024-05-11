@@ -1,3 +1,5 @@
+![Demo](QuoteApp.mp4)
+
 
 # Quotes Dashboard Application
 
