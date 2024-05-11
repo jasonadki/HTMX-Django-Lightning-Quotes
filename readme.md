@@ -2,7 +2,7 @@
 # Quotes Dashboard Application
 
 ## Overview
-The Quotes Dashboard is a simple application that generates quote cards for invoices with satoshi amounts and QR codes. Each card features a unique QR code that facilitates payment. Users can drag these cards around freely within the app's interface. When a QR code receives a payment, the application instantly recognizes it and utilizes HTMX to update only the specific card that has been paid. This approach ensures smooth, real-time payment processing and accurate visual feedback, making it easy to monitor transaction statuses at a glance.
+The Quotes Dashboard is a simple application that generates quote cards for invoices with bitcoin amounts and QR codes. Each card features a unique QR code that facilitates payment. Users can drag these cards around freely within the app's interface. When a QR code receives a payment, the application instantly recognizes it and utilizes HTMX to update only the specific card that has been paid. This approach ensures smooth, real-time payment processing and accurate visual feedback, making it easy to monitor transaction statuses at a glance.
 
 ### Key Features
 - **Lightning Network Payments:** Supports payments over the Lightning Network using the BTCPay Server through Voltage.
@@ -16,6 +16,8 @@ The Quotes Dashboard is a simple application that generates quote cards for invo
 - **Django**
 - **HTMX**
 - **Voltage Account**
+- **Redis**: For managing WebSocket connections and background tasks.
+- **Daphne**: Asynchronous server to handle WebSockets and HTTP requests.
 
 ## Environment Setup
 Ensure you have the following fields configured in a `.env.development` file for secure and seamless functionality. **Do not share your sensitive data.** The following fields are required:
@@ -49,8 +51,10 @@ API_BEARER_TOKEN=<your-api-bearer-token>
 - **Voltage**: [Voltage Cloud Platform](https://voltage.cloud/)
 - **HTMX**: [HTMX Documentation](https://htmx.org/docs/)
 - **BTCPay Server**: [BTCPay Server](https://btcpayserver.org/)
+- **Redis**: [Redis Installation Guide](https://redis.io/download)
+- **Daphne**: [Daphne Documentation](https://github.com/django/daphne)
 
 Feel free to customize this template to best suit your needs.
 
-## Tipme
-https://btcpay0.voltageapp.io/apps/3UCpT9Ln5btcgKH4EdTGRh5jCEAT/crowdfund
+## Tip Me
+[BTCPay Server Crowdfund App](https://btcpay0.voltageapp.io/apps/3UCpT9Ln5btcgKH4EdTGRh5jCEAT/crowdfund)
