@@ -4,7 +4,31 @@
         {{ qr_code_html|safe }}
     </div>
 
+    <div id="copy-ln-address-{{ quote.id }}">
+        <!-- Pass quote ID directly to the function -->
+        <button onclick="copyLNAddress('{{ ln_address }}')">Copy LN Address</button>
+    </div>
+
     <div id="loading-spinner-{{ quote.id }}" class="loader" style="display: inline-block;"></div>
 
     <div id="payment-confirmation-{{ quote.id }}" class="checkmark" style="display: none;"></div>
 </div>
+
+<script>
+    function copyLNAddress(lnAddress) {
+        console.log("Copying LN address to clipboard: ", lnAddress);
+        // Create a temporary input element
+        var tempInput = document.createElement("input");
+        tempInput.style = "position: absolute; left: -1000px; top: -1000px";
+        tempInput.value = lnAddress;
+
+        // Append it to the body, select its content, and copy to clipboard
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+
+        // Remove the temporary input element
+        document.body.removeChild(tempInput);
+
+    }
+</script>
