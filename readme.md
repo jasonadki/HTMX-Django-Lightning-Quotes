@@ -2,7 +2,7 @@
 # Quotes Dashboard Application
 
 
-![Demo](screen_shot.png)
+![Demo](LightningQuotePic.png)
 
 
 ## Overview
