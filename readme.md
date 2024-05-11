@@ -1,7 +1,9 @@
-![Demo](screen_shot.png)
-
 
 # Quotes Dashboard Application
+
+
+![Demo](screen_shot.png)
+
 
 ## Overview
 The Quotes Dashboard is a simple application that generates quote cards for invoices with bitcoin amounts and QR codes. Each card features a unique QR code that facilitates payment. Users can drag these cards around freely within the app's interface. When a QR code receives a payment, the application instantly recognizes it and utilizes HTMX to update only the specific card that has been paid. This approach ensures smooth, real-time payment processing and accurate visual feedback, making it easy to monitor transaction statuses at a glance.
