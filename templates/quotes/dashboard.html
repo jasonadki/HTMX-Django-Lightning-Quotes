@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block content %}
+<nav style="
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    width: 98%;
+    z-index: 1000;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+  ">
+    <!-- Dashboard Title -->
+    <h1 style="margin: 0; font-size: 20px; color: #333">Quotes Dashboard</h1>
+
+    <!-- Add Quote Button -->
+    <a href="#quoteModal" onclick="showModal(event)" style="
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-left: auto;
+    cursor: pointer;
+  ">Add Quote</a>
+
+    <!-- Logout Link -->
+    <a href="{% url 'custom_logout' %}" hx-get="{% url 'custom_logout' %}" hx-target="body" style="
+      text-decoration: none;
+      background-color: #dc3545;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-left: 10px;
+    ">Logout</a>
+</nav>
+
+<!-- The Modal -->
+<div id="quoteModal" hx-target="#quoteModal" hx-swap="outerHTML" class="modal">
+    <div class="modal-content">
+        <a href="#" class="close">&times;</a>
+        <!-- Ensure this form inside the modal has proper HTMX attributes -->
+        <form method="post" hx-post="{% url 'add_quote' %}" hx-target="#quotes-container" hx-swap="beforeend"
+            hx-trigger="submit">
+            {% csrf_token %}
+            <textarea id="quoteContent" name="content" placeholder="Enter your quote here..." style="width: 100%"></textarea>
+            <input id="quoteNumber" type="number" name="integer_field" placeholder="Enter your integer..."
+                style="width: 100%; margin-top: 10px;">
+            <button type="submit"
+                style="background-color: #4caf50; color: white; padding: 10px; border-radius: 5px; margin-top: 10px;">Submit</button>
+        </form>
+    </div>
+</div>
+
+<div style="padding-top: 80px; text-align: center; margin-top: 60px">
+    <h2>Welcome to your Quotes list.</h2>
+    <div id="quotes-container" class="draggable-container" style="background-color: #abd5fa; width: 1400px; margin: 0 auto; height: 1400px; position: relative;">
+        <!-- This is where the quotes will be dynamically loaded -->
+        {% include 'quotes/quotes_list.html' %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        setupWebSocket();
+        initializeDraggableItems();
+
+        var container = document.querySelector('.draggable-container');
+
+        container.addEventListener('mousedown', function (e) {
+            if (e.target.classList.contains('quote-card')) {
+                startDrag(e.target, e);
+            }
+        });
+
+        document.addEventListener('mouseup', function () {
+            if (window.draggedItem) {
+                document.removeEventListener('mousemove', moveItem);
+                savePositions();
+                window.draggedItem = null;
+            }
+        });
+    });
+
+    function savePositions() {
+        var quotes = document.querySelectorAll('.quote-card');
+        quotes.forEach(quote => {
+            const position = { left: quote.style.left, top: quote.style.top };
+            quote.dataset.position = JSON.stringify(position);
+        });
+    }
+
+    function restorePositions() {
+        var quotes = document.querySelectorAll('.quote-card');
+        quotes.forEach(quote => {
+            const position = JSON.parse(quote.dataset.position || '{"left":"", "top":""}');
+            quote.style.left = position.left;
+            quote.style.top = position.top;
+        });
+    }
+
+    function appendNewQuote(html) {
+        var container = document.querySelector('.draggable-container');
+        container.insertAdjacentHTML('beforeend', html);
+        initializeDraggable(container.lastElementChild); // Initialize draggable functionality on new element
+        restorePositions(); // Restore positions after adding a new quote
+    }
+
+    function initializeDraggableItems() {
+        var quotes = document.querySelectorAll('.quote-card');
+        quotes.forEach(initializeDraggable);
+    }
+
+    function initializeDraggable(element) {
+        element.addEventListener('mousedown', function (e) {
+            if (e.target.classList.contains('quote-card')) {
+                startDrag(element, e);
+            }
+        });
+    }
+
+    function startDrag(element, e) {
+        window.draggedItem = element;
+        window.startX = e.clientX;
+        window.startY = e.clientY;
+        window.origX = element.offsetLeft;
+        window.origY = element.offsetTop;
+        document.addEventListener('mousemove', moveItem);
+        e.preventDefault(); // Prevent default drag behavior
+    }
+
+    function moveItem(e) {
+        if (window.draggedItem) {
+            var newX = window.origX + (e.clientX - window.startX);
+            var newY = window.origY + (e.clientY - window.startY);
+            window.draggedItem.style.left = newX + 'px';
+            window.draggedItem.style.top = newY + 'px';
+        }
+    }
+
+    function setupWebSocket() {
+        const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+        const wsPath = `${wsScheme}://${window.location.host}/ws/quotes/`;
+        const ws = new WebSocket(wsPath);
+
+        console.log("WebSocket connection to:", wsPath);
+        console.log("WebSocket readyState:", ws.readyState);
+
+        ws.onmessage = function (event) {
+            console.log("WebSocket message received:", event.data);
+            const data = JSON.parse(event.data);
+            if (data.type && data.type === "quote.update") {
+                console.log("Update received:", data);
+                updateQuote(data.quote_id, data.status);
+            }
+        };
+        ws.onopen = function () { console.log("WebSocket connection established"); };
+        ws.onerror = function (e) { console.error("WebSocket Error observed:", e); };
+    }
+
+    function updateQuote(quoteId, status) {
+    const quoteElement = document.getElementById(`quote-${quoteId}`);
+    if (quoteElement) {
+        console.log("Updating quote:", quoteId, "with status:", status);
+
+        // Access elements within the quote card correctly
+        const qrCode = quoteElement.querySelector(`#qr-code-${quoteId}`);
+        const loadingSpinner = quoteElement.querySelector(`#loading-spinner-${quoteId}`);
+        const paymentConfirmation = quoteElement.querySelector(`#payment-confirmation-${quoteId}`);
+
+        if (qrCode) qrCode.style.display = "none";
+        if (loadingSpinner) loadingSpinner.style.display = "none";
+        if (paymentConfirmation) paymentConfirmation.style.display = "inline-block";
+        
+    }
+}
+
+
+    function generateRandomName() {
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let name = "";
+        for (let i = 0; i < 3; i++) {
+            name += letters.charAt(Math.floor(Math.random() * letters.length));
+        }
+        return name;
+    }
+
+    function generateRandomInteger() {
+        return Math.floor(Math.random() * 10) + 1;
+    }
+
+    function showModal(event) {
+        event.preventDefault(); // Prevent default anchor behavior
+        const modal = document.getElementById('quoteModal');
+        // Generate and display random values
+        document.getElementById('quoteContent').value = generateRandomName();
+        document.getElementById('quoteNumber').value = generateRandomInteger();
+        modal.style.display = 'block'; // Show the modal
+    }
+
+    // Close modal logic if you click 'x' or outside the modal
+    document.querySelector('.close').addEventListener('click', function () {
+        document.getElementById('quoteModal').style.display = 'none';
+    });
+
+    // Optionally, close on outside click
+    window.onclick = function (event) {
+        var modal = document.getElementById('quoteModal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    document.body.addEventListener('htmx:afterSwap', function (event) {
+        if (event.target.id === 'quotes-container') {
+            document.getElementById('quoteModal').style.display = 'none';  // Close modal
+        }
+    });
+
+
+</script>
+
+{% endblock %}

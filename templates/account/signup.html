@@ -1,0 +1,61 @@
+{% extends "base.html" %} {% block content %}
+<div
+  style="
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #ecf0f3;
+  ">
+  <div
+    style="
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    ">
+    <h2 style="margin-bottom: 30px; text-align: center">Sign Up</h2>
+    <!-- This div with id signup-form is the HTMX target, and it should include the whole form -->
+    <div id="signup-form">
+      <form
+        method="post"
+        action="{% url 'account_signup' %}"
+        hx-post="{% url 'account_signup' %}"
+        hx-target="#signup-form"
+        hx-swap="outerHTML">
+        {% csrf_token %} {% if form.non_field_errors %}
+        <div class="error" style="color: red; text-align: center">
+          <!-- Displaying non-field-specific form errors -->
+          {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+        <!-- Displaying field-specific form errors and form fields -->
+        {{ form.as_p }}
+        <button
+          type="submit"
+          style="
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            border-radius: 4px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+          ">
+          Sign Up
+        </button>
+      </form>
+    </div>
+    <div style="text-align: center; margin-top: 20px">
+      Already have an account?
+      <a
+        href="{% url 'account_login' %}"
+        style="color: #4caf50; text-decoration: none"
+        >Login</a
+      >
+    </div>
+  </div>
+</div>
+{% endblock %}

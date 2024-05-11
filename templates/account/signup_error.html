@@ -1,0 +1,13 @@
+<!-- account/signup_error.html -->
+
+{% if form.errors %}
+<div class="error">
+  <!-- Displaying form errors -->
+  {{ form.non_field_errors }}
+</div>
+{% else %}
+<form method="post" action="{% url 'account_signup' %}">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Signup</button>
+</form>
+{% endif %}

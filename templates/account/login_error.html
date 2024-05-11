@@ -1,0 +1,22 @@
+<!-- account/signup_error.html -->
+
+{% if form.errors %}
+<div class="error">
+  <!-- Displaying form errors -->
+  {{ form.non_field_errors }}
+  <!-- Optionally, display field-specific errors -->
+  {% for field in form %} {% if field.errors %} {{ field.errors }} {% endif %}
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- The structure below is displayed if there are no errors, i.e., on the initial page load -->
+<form
+  method="post"
+  action="{% url 'account_signup' %}"
+  hx-post="{% url 'account_signup' %}"
+  hx-target="#signup-form"
+  hx-swap="outerHTML">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Sign Up</button>
+</form>

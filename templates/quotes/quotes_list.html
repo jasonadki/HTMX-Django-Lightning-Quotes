@@ -1,0 +1,9 @@
+{% for quote in quotes %}
+<div id="quote-{{ quote.id }}" class="quote-card" draggable="true" ondragstart="drag(event)">
+  <h3 class="quote-title">{{ quote.id }}</h3>
+  <p class="quote-content">{{ quote.content }}</p>
+  <small class="quote-status" data-status="{{ quote.status }}">
+    Status: {{ quote.get_status_display }}
+  </small>
+</div>
+{% endfor %}
