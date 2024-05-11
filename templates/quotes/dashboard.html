@@ -165,21 +165,23 @@
     }
 
     function updateQuote(quoteId, status) {
-    const quoteElement = document.getElementById(`quote-${quoteId}`);
-    if (quoteElement) {
-        console.log("Updating quote:", quoteId, "with status:", status);
-
-        // Access elements within the quote card correctly
-        const qrCode = quoteElement.querySelector(`#qr-code-${quoteId}`);
-        const loadingSpinner = quoteElement.querySelector(`#loading-spinner-${quoteId}`);
-        const paymentConfirmation = quoteElement.querySelector(`#payment-confirmation-${quoteId}`);
-
-        if (qrCode) qrCode.style.display = "none";
-        if (loadingSpinner) loadingSpinner.style.display = "none";
-        if (paymentConfirmation) paymentConfirmation.style.display = "inline-block";
-        
+        const quoteElement = document.getElementById(`quote-${quoteId}`);
+        if (quoteElement) {
+            console.log("Updating quote:", quoteId, "with status:", status);
+    
+            // Access elements within the quote card correctly
+            const qrCode = quoteElement.querySelector(`#qr-code-${quoteId}`);
+            const lnButton = quoteElement.querySelector(`#copy-ln-address-${quoteId}`);
+            const loadingSpinner = quoteElement.querySelector(`#loading-spinner-${quoteId}`);
+            const paymentConfirmation = quoteElement.querySelector(`#payment-confirmation-${quoteId}`);
+    
+            if (qrCode) qrCode.style.display = "none";
+            if (lnButton) lnButton.style.display = "none";
+            if (loadingSpinner) loadingSpinner.style.display = "none";
+            if (paymentConfirmation) paymentConfirmation.style.display = "inline-block";
+            
+        }
     }
-}
 
 
     function generateRandomName() {
