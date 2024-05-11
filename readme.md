@@ -45,7 +45,7 @@ API_BEARER_TOKEN=<your-api-bearer-token>
 2. Create a virtual environment and activate it.
 3. Install the required packages via `pip install -r requirements.txt`.
 4. Add the environment variables in the `.env.development` file.
-5. Run the server using `python manage.py runserver`.
+5. Run the server using `daphne -p 8001 QuoteFlowApp.asgi:application` and `ngrok http --domain=<ngrok-address> 8001` (Assuming the Redis server is running in the background)
 
 ### Additional Information
 - **Voltage**: [Voltage Cloud Platform](https://voltage.cloud/)
