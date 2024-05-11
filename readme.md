@@ -1,4 +1,4 @@
-![Demo](QuoteApp_short.mp4)
+![Demo](screen_shot.png)
 
 
 # Quotes Dashboard Application
